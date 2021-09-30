@@ -4,7 +4,7 @@ import styles from './MealItem.module.css';
 import CartContext from '../../../store/cart-context';
 import MealItemForm from './MealItemForm';
 
-const MealItem = ({ name, description, price, id }) => {
+const MealItem = ({ id, name, description, price }) => {
 	const cartCtx = useContext(CartContext);
 
 	const priceFixed = `$${price.toFixed(2)}`;
@@ -16,7 +16,7 @@ const MealItem = ({ name, description, price, id }) => {
 			amount,
 			price
 		});
-		console.log(cartCtx.amount);
+		console.log(cartCtx);
 	};
 
 	return (
