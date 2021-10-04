@@ -1,12 +1,12 @@
 import styles from './Checkout.module.css';
 
 const Checkout = ({ onCancel }) => {
-	const confirmHandler = (e) => {
-		e.preventDefault();
+	const confirmHandler = (event) => {
+		event.preventDefault();
 	};
 
 	return (
-		<form onSubmit={confirmHandler}>
+		<form className={styles.form} onSubmit={confirmHandler}>
 			<div className={styles.control}>
 				<label htmlFor="name">Your Name</label>
 				<input type="text" id="name" />
@@ -23,10 +23,12 @@ const Checkout = ({ onCancel }) => {
 				<label htmlFor="city">City</label>
 				<input type="text" id="city" />
 			</div>
-			<button type="button" onClick={onCancel}>
-				Cancel
-			</button>
-			<button>Confirm</button>
+			<div className={styles.actions}>
+				<button type="button" onClick={onCancel}>
+					Cancel
+				</button>
+				<button className={styles.submit}>Confirm</button>
+			</div>
 		</form>
 	);
 };
