@@ -25,6 +25,16 @@ const Cart = ({ onClose }) => {
 		setCheckout(true);
 	};
 
+	const submitOrderHandler = (userData) => {
+		fetch('https://true-harmony-355-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json', {
+			method: 'POST',
+			body: JSON.stringify({
+				user: userData,
+				orderedItems: cartCtx.items
+			})
+		});
+	};
+
 	const cartItems = (
 		<ul className={styles['cart-items']}>
 			{cartCtx.items.map((item) => (
@@ -60,7 +70,7 @@ const Cart = ({ onClose }) => {
 				<span>Total Amount</span>
 				<span>{totalAmount}</span>
 			</div>
-			{getCheckout && <Checkout onCancel={onClose} />}
+			{getCheckout && <Checkout onCancel={onClose} onConfirm={submitOrderHandler} />}
 			{!getCheckout && modalActions}
 		</Modal>
 	);
