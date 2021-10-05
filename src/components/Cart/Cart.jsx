@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 import CartContext from '../../store/cart-context';
 import Modal from '../UI/Modal';
 import styles from './Cart.module.css';
@@ -7,6 +7,8 @@ import Checkout from './Checkout';
 
 const Cart = ({ onClose }) => {
 	const [ getCheckout, setCheckout ] = useState(false);
+	const [ getSubmitting, setSubmitting ] = useState(false);
+	const [ getSubmitted, setSubmitted ] = useState(false);
 	const cartCtx = useContext(CartContext);
 
 	const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -18,21 +20,25 @@ const Cart = ({ onClose }) => {
 	};
 
 	const cartItemAddHandler = (item) => {
-		cartCtx.addItem({ ...item, amount: 1 });
+		cartCtx.addItem(item);
 	};
 
 	const orderHandler = () => {
 		setCheckout(true);
 	};
 
-	const submitOrderHandler = (userData) => {
-		fetch('https://true-harmony-355-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json', {
+	const submitOrderHandler = async (userData) => {
+		setSubmitting(true);
+		await fetch('https://true-harmony-355-default-rtdb.asia-southeast1.firebasedatabase.app/orders.json', {
 			method: 'POST',
 			body: JSON.stringify({
 				user: userData,
 				orderedItems: cartCtx.items
 			})
 		});
+		setSubmitting(false);
+		setSubmitted(true);
+		cartCtx.clearCart();
 	};
 
 	const cartItems = (
@@ -63,8 +69,8 @@ const Cart = ({ onClose }) => {
 		</div>
 	);
 
-	return (
-		<Modal onClose={onClose}>
+	const cartModalContent = (
+		<Fragment>
 			{cartItems}
 			<div className={styles.total}>
 				<span>Total Amount</span>
@@ -72,6 +78,26 @@ const Cart = ({ onClose }) => {
 			</div>
 			{getCheckout && <Checkout onCancel={onClose} onConfirm={submitOrderHandler} />}
 			{!getCheckout && modalActions}
+		</Fragment>
+	);
+
+	const submittingContent = <p>Sending data to server...</p>;
+	const submittedContent = (
+		<Fragment>
+			<p>Order success!</p>
+			<div className={styles.actions}>
+				<button className={styles.button} onClick={onClose}>
+					Close
+				</button>
+			</div>
+		</Fragment>
+	);
+
+	return (
+		<Modal onClose={onClose}>
+			{!getSubmitting && !getSubmitted && cartModalContent}
+			{getSubmitting && submittingContent}
+			{!getSubmitting && getSubmitted && submittedContent}
 		</Modal>
 	);
 };
